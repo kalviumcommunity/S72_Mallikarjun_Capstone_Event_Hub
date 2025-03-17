@@ -19,7 +19,7 @@ Day 7: Add sub-event components under each main event (e.g., decoration, cake).
 Day 8: Add package options (Gold, Platinum) for each event category.
 
 Day 9: Implement the customization feature for users to select their preferences.
-
+ 
 Day 10: Create a form for users to describe their dream events.
 
 Day 11: Build a page to display event images, cakes, and global event locations.
@@ -42,4 +42,4 @@ Day 18: Optimize the platform for performance and fix any bugs identified during
 
 Day 19: Add final touches to the UI/UX design to make it visually appealing.
 
-Day 20: Deploy the website on a hosting platform and prepare for the final demo.
+Day 20: Deploy the website on a hosting platform and prepare for the final demo .
