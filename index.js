@@ -11,11 +11,16 @@ app.get('/api/welcome', (req, res) => {
     res.json({ message: 'Welcome to the Event Hub API!' });
 });
 
-// GET endpoint for server status
-app.get('/api/status', (req, res) => {
-    res.json({ status: 'Server is running smoothly!' });
-});
 
+
+app.get('/categories/:category', (req, res) => res.json({ events: [] }));
+
+
+app.get('/services/:eventId', (req, res) => {
+    const { eventId } = req.params;
+    res.json({ services: [] });
+  });
+  
 
 
 app.listen(PORT, () => {
