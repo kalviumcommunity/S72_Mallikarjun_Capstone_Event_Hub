@@ -1,6 +1,7 @@
 <h1>S72_Mallikarjun_Capstone_Event_Hub</h1>
 
 <h3>Week 1 - Planning & Initial Development:</h3>
+
 Day 1: Finalize project scope, gather all requirements, and design the architecture.
 
 Day 2: Create a database schema for categories, events, sub-events, and packages.

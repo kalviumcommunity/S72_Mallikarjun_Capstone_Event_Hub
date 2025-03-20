@@ -1,0 +1,101 @@
+/* Updated styles.css */
+body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #eaeaea; /* Changed back to original background color */
+}
+
+
+header {
+    background: #35424a; /* Original header color */
+
+    color: #ffffff;
+    padding: 20px;
+    text-align: center;
+}
+
+
+header img {
+    max-width: 150px; /* Placeholder for logo */
+}
+
+.hero {
+    background-image: url('../images/hero-background.jpg');
+    background-size: cover;
+    color: #ffffff;
+    padding: 50px 20px; /* Changed padding back to original */
+    text-align: center;
+}
+
+
+.cta-button {
+    background-color: #ff5722; /* Changed back to original button color */
+
+    color: white;
+    padding: 15px 30px;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background 0.3s, transform 0.3s;
+}
+
+.cta-button:hover {
+    transform: scale(1.05);
+}
+
+.event-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+.event {
+    background: #ffffff; /* Original background color */
+    border-radius: 5px; /* Changed back to original border radius */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Changed back to original shadow */
+    overflow: hidden;
+    transition: transform 0.3s;
+}
+
+
+.event:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+footer {
+    background: #35424a; /* Original footer color */
+
+    color: #ffffff;
+    text-align: center;
+    padding: 20px 0;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+}
+
+nav ul li {
+    display: inline;
+    margin: 0 15px;
+}
+
+nav ul li a {
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+main {
+    padding: 20px;
+}
+
+.category {
+    margin: 20px 0;
+    padding: 10px;
+    background: #ffffff;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
