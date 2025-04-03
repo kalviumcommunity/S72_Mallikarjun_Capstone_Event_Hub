@@ -1,30 +1,44 @@
+import { useState, useEffect } from 'react';
+
 function Dashboard() {
-  const organizedEvents = [
-    {
-      id: 1,
-      title: 'Royal Wedding Ceremony',
-      date: '2024-03-15',
-      location: 'Bengaluru Palace',
-      type: 'Wedding',
-      status: 'Completed'
-    },
-    {
-      id: 2,
-      title: 'Tech Conference 2024',
-      date: '2024-02-28',
-      location: 'Pune Convention Center',
-      type: 'Corporate',
-      status: 'Completed'
-    },
-    {
-      id: 3,
-      title: 'International Food Festival',
-      date: '2024-04-10',
-      location: 'Uganda Cultural Center',
-      type: 'Cultural',
-      status: 'Upcoming'
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchEvents();
+  }, []);
+
+  const fetchEvents = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/events');
+      if (!response.ok) {
+        throw new Error('Failed to fetch events');
+      }
+      const data = await response.json();
+      setEvents(data.data);
+      setLoading(false);
+    } catch (error) {
+      setError(error.message);
+      setLoading(false);
     }
-  ]
+  };
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <p className="text-center">Loading events...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <p className="text-center text-red-500">Error: {error}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -33,7 +47,7 @@ function Dashboard() {
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
         <div className="bg-white rounded-lg shadow-lg p-6">
           <h2 className="text-xl font-bold mb-4">Total Events</h2>
-          <p className="text-4xl font-bold text-indigo-600">150+</p>
+          <p className="text-4xl font-bold text-indigo-600">{events.length}+</p>
         </div>
         <div className="bg-white rounded-lg shadow-lg p-6">
           <h2 className="text-xl font-bold mb-4">Global Locations</h2>
@@ -54,24 +68,24 @@ function Dashboard() {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Event</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {organizedEvents.map(event => (
+              {events.map(event => (
                 <tr key={event.id}>
                   <td className="px-6 py-4 whitespace-nowrap">{event.title}</td>
                   <td className="px-6 py-4 whitespace-nowrap">{event.date}</td>
                   <td className="px-6 py-4 whitespace-nowrap">{event.location}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{event.type}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">{event.category}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`px-2 py-1 rounded-full text-xs ${
-                      event.status === 'Completed' 
+                      new Date(event.date) < new Date() 
                         ? 'bg-green-100 text-green-800'
                         : 'bg-yellow-100 text-yellow-800'
                     }`}>
-                      {event.status}
+                      {new Date(event.date) < new Date() ? 'Completed' : 'Upcoming'}
                     </span>
                   </td>
                 </tr>
@@ -81,7 +95,7 @@ function Dashboard() {
         </div>
       </section>
     </div>
-  )
+  );
 }
 
-export default Dashboard
+export default Dashboard;
