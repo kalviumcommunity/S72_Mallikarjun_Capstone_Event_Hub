@@ -144,7 +144,7 @@ const Services = () => {
       icon: <Sparkles className="w-8 h-8 text-primary" />,
       title: "Lighting & Décor",
       description: "Professional lighting and decorative elements for venues.",
-      price: "Starting from ₹20,000"
+      price: "Starting from ₹25,000"
     },
     {
       icon: <Users className="w-8 h-8 text-primary" />,
