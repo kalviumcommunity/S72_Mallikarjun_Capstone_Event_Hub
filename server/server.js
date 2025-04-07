@@ -226,7 +226,95 @@ app.get('/api/events/stats', (req, res) => {
     res.json({ status: "success", data: stats });
 });
 
+// POST Endpoints
+
+// 1. Create a new event
+app.post('/api/events', (req, res) => {
+    const newEvent = req.body;
+    
+    // Validate required fields
+    if (!newEvent.title || !newEvent.date || !newEvent.location || !newEvent.type) {
+        return res.status(400).json({
+            status: "error",
+            message: "Missing required fields: title, date, location, and type are required"
+        });
+    }
+
+    // Generate new ID
+    const newId = events.length > 0 ? Math.max(...events.map(e => e.id)) + 1 : 1;
+    
+    // Create event object with default values
+    const event = {
+        id: newId,
+        title: newEvent.title,
+        date: newEvent.date,
+        location: newEvent.location,
+        type: newEvent.type,
+        status: newEvent.status || "Upcoming",
+        description: newEvent.description || "",
+        price: newEvent.price || "₹0",
+        image: newEvent.image || ""
+    };
+
+    // Add to events array
+    events.push(event);
+    
+    res.status(201).json({
+        status: "success",
+        message: "Event created successfully",
+        data: event
+    });
+});
+
+// 2. Create a new service
+app.post('/api/services/:category', (req, res) => {
+    const category = req.params.category.toLowerCase();
+    const newService = req.body;
+
+    // Validate category exists
+    if (!services[category]) {
+        return res.status(400).json({
+            status: "error",
+            message: "Invalid category. Must be one of: wedding, birthday, corporate"
+        });
+    }
+
+    // Validate required fields
+    if (!newService.title || !newService.description || !newService.price) {
+        return res.status(400).json({
+            status: "error",
+            message: "Missing required fields: title, description, and price are required"
+        });
+    }
+
+    // Generate new ID
+    const newId = services[category].length > 0 
+        ? Math.max(...services[category].map(s => s.id)) + 1 
+        : 1;
+
+    // Create service object
+    const service = {
+        id: newId,
+        title: newService.title,
+        description: newService.description,
+        price: newService.price,
+        includes: newService.includes || []
+    };
+
+    // Add to services array
+    services[category].push(service);
+
+    res.status(201).json({
+        status: "success",
+        message: "Service created successfully",
+        data: service
+    });
+});
+
 // Start the server
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
-}); 
+});                    
+
+// 10. Get event by date
+
