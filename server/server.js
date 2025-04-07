@@ -226,6 +226,8 @@ app.get('/api/events/stats', (req, res) => {
     res.json({ status: "success", data: stats });
 });
 
+
+
 // POST Endpoints
 
 // 1. Create a new event
@@ -308,6 +310,103 @@ app.post('/api/services/:category', (req, res) => {
         status: "success",
         message: "Service created successfully",
         data: service
+    });
+});
+
+// PUT Endpoints
+
+// 1. Update an existing event
+app.put('/api/events/:id', (req, res) => {
+    const eventId = parseInt(req.params.id);
+    const updatedEvent = req.body;
+    
+    // Find the event index
+    const eventIndex = events.findIndex(e => e.id === eventId);
+    
+    if (eventIndex === -1) {
+        return res.status(404).json({
+            status: "error",
+            message: "Event not found"
+        });
+    }
+
+    // Validate required fields if they are being updated
+    if (updatedEvent.title === "" || updatedEvent.date === "" || 
+        updatedEvent.location === "" || updatedEvent.type === "") {
+        return res.status(400).json({
+            status: "error",
+            message: "Required fields cannot be empty"
+        });
+    }
+
+    // Update the event with new values, keeping existing values if not provided
+    const event = events[eventIndex];
+    events[eventIndex] = {
+        ...event,
+        title: updatedEvent.title || event.title,
+        date: updatedEvent.date || event.date,
+        location: updatedEvent.location || event.location,
+        type: updatedEvent.type || event.type,
+        status: updatedEvent.status || event.status,
+        description: updatedEvent.description || event.description,
+        price: updatedEvent.price || event.price,
+        image: updatedEvent.image || event.image
+    };
+
+    res.json({
+        status: "success",
+        message: "Event updated successfully",
+        data: events[eventIndex]
+    });
+});
+
+// 2. Update an existing service
+app.put('/api/services/:category/:id', (req, res) => {
+    const category = req.params.category.toLowerCase();
+    const serviceId = parseInt(req.params.id);
+    const updatedService = req.body;
+
+    // Validate category exists
+    if (!services[category]) {
+        return res.status(400).json({
+            status: "error",
+            message: "Invalid category. Must be one of: wedding, birthday, corporate"
+        });
+    }
+
+    // Find the service index
+    const serviceIndex = services[category].findIndex(s => s.id === serviceId);
+    
+    if (serviceIndex === -1) {
+        return res.status(404).json({
+            status: "error",
+            message: "Service not found"
+        });
+    }
+
+    // Validate required fields if they are being updated
+    if (updatedService.title === "" || updatedService.description === "" || 
+        updatedService.price === "") {
+        return res.status(400).json({
+            status: "error",
+            message: "Required fields cannot be empty"
+        });
+    }
+
+    // Update the service with new values, keeping existing values if not provided
+    const service = services[category][serviceIndex];
+    services[category][serviceIndex] = {
+        ...service,
+        title: updatedService.title || service.title,
+        description: updatedService.description || service.description,
+        price: updatedService.price || service.price,
+        includes: updatedService.includes || service.includes
+    };
+
+    res.json({
+        status: "success",
+        message: "Service updated successfully",
+        data: services[category][serviceIndex]
     });
 });
 
