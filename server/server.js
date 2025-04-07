@@ -6,6 +6,9 @@ const PORT = 5000;
 app.use(express.json());
 app.use(cors());
 
+const connectDB = require('./config/db');
+connectDB();
+
 // Sample data for events
 const events = [
     {
