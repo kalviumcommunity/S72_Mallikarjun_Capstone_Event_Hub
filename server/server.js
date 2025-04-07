@@ -99,17 +99,6 @@ const services = {
 
 // 1. Get all events
 app.get('/api/events', (req, res) => {
-    console.log('\n=== GET All Events ===');
-    console.log('Total Events:', events.length);
-    events.forEach(event => {
-        console.log(`
-Title: ${event.title}
-Date: ${event.date}
-Location: ${event.location}
-Type: ${event.type}
-Status: ${event.status}
------------------`);
-    });
     res.json({ status: "success", data: events });
 });
 
@@ -117,19 +106,6 @@ Status: ${event.status}
 app.get('/api/events/:id', (req, res) => {
     const eventId = parseInt(req.params.id);
     const event = events.find(e => e.id === eventId);
-    
-    console.log('\n=== GET Event by ID ===');
-    console.log('Requested ID:', eventId);
-    if (event) {
-        console.log(`
-Found Event:
-Title: ${event.title}
-Date: ${event.date}
-Location: ${event.location}
------------------`);
-    } else {
-        console.log('Event not found');
-    }
     
     if (!event) {
         return res.status(404).json({ status: "error", message: "Event not found" });
@@ -143,27 +119,11 @@ app.get('/api/events/type/:type', (req, res) => {
     const filteredEvents = events.filter(
         event => event.type.toLowerCase() === eventType.toLowerCase()
     );
-
-    console.log('\n=== GET Events by Type ===');
-    console.log('Type:', eventType);
-    console.log('Found Events:', filteredEvents.length);
-    filteredEvents.forEach(event => {
-        console.log(`
-Title: ${event.title}
-Date: ${event.date}
------------------`);
-    });
-
     res.json({ status: "success", data: filteredEvents });
 });
 
 // 4. Get all services
 app.get('/api/services', (req, res) => {
-    console.log('\n=== GET All Services ===');
-    console.log('Categories:', Object.keys(services));
-    Object.entries(services).forEach(([category, serviceList]) => {
-        console.log(`\n${category.toUpperCase()} Services:`, serviceList.length);
-    });
     res.json({ status: "success", data: services });
 });
 
@@ -171,20 +131,6 @@ app.get('/api/services', (req, res) => {
 app.get('/api/services/:category', (req, res) => {
     const category = req.params.category.toLowerCase();
     const categoryServices = services[category];
-
-    console.log('\n=== GET Services by Category ===');
-    console.log('Category:', category);
-    if (categoryServices) {
-        console.log('Found Services:', categoryServices.length);
-        categoryServices.forEach(service => {
-            console.log(`
-Title: ${service.title}
-Price: ${service.price}
------------------`);
-        });
-    } else {
-        console.log('Category not found');
-    }
 
     if (!categoryServices) {
         return res.status(404).json({ 
@@ -198,12 +144,8 @@ Price: ${service.price}
 // 6. Search events
 app.get('/api/search', (req, res) => {
     const { query } = req.query;
-    
-    console.log('\n=== Search Events ===');
-    console.log('Search Query:', query);
 
     if (!query) {
-        console.log('No search query provided');
         return res.json({ status: "success", data: events });
     }
 
@@ -213,27 +155,78 @@ app.get('/api/search', (req, res) => {
         event.location.toLowerCase().includes(query.toLowerCase())
     );
 
-    console.log('Search Results:', searchResults.length);
-    searchResults.forEach(event => {
-        console.log(`
-Title: ${event.title}
-Location: ${event.location}
------------------`);
+    res.json({ status: "success", data: searchResults });
+});
+
+// 7. Get upcoming events
+app.get('/api/events/upcoming', (req, res) => {
+    const today = new Date();
+    const upcomingEvents = events.filter(event => {
+        const eventDate = new Date(event.date);
+        return eventDate >= today;
+    });
+    res.json({ status: "success", data: upcomingEvents });
+});
+
+// 8. Get events by date range
+app.get('/api/events/range', (req, res) => {
+    const { startDate, endDate } = req.query;
+
+    if (!startDate || !endDate) {
+        return res.status(400).json({
+            status: "error",
+            message: "Start date and end date are required"
+        });
+    }
+
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    
+    const eventsInRange = events.filter(event => {
+        const eventDate = new Date(event.date);
+        return eventDate >= start && eventDate <= end;
     });
 
-    res.json({ status: "success", data: searchResults });
+    res.json({ status: "success", data: eventsInRange });
+});
+
+// 9. Get event statistics
+app.get('/api/events/stats', (req, res) => {
+    const stats = {
+        totalEvents: events.length,
+        eventsByType: {},
+        eventsByStatus: {},
+        priceRange: {
+            min: Infinity,
+            max: 0,
+            average: 0
+        }
+    };
+
+    // Calculate statistics
+    events.forEach(event => {
+        // Count by type
+        stats.eventsByType[event.type] = (stats.eventsByType[event.type] || 0) + 1;
+        
+        // Count by status
+        stats.eventsByStatus[event.status] = (stats.eventsByStatus[event.status] || 0) + 1;
+        
+        // Price calculations
+        const price = parseInt(event.price.replace(/[^0-9]/g, ''));
+        stats.priceRange.min = Math.min(stats.priceRange.min, price);
+        stats.priceRange.max = Math.max(stats.priceRange.max, price);
+    });
+
+    // Calculate average price
+    const totalPrice = events.reduce((sum, event) => {
+        return sum + parseInt(event.price.replace(/[^0-9]/g, ''));
+    }, 0);
+    stats.priceRange.average = totalPrice / events.length;
+
+    res.json({ status: "success", data: stats });
 });
 
 // Start the server
 app.listen(PORT, () => {
-    console.log('\n====== Event Hub Server ======');
     console.log(`Server is running on port ${PORT}`);
-    console.log('\nAvailable Endpoints:');
-    console.log('1. GET /api/events - Get all events');
-    console.log('2. GET /api/events/:id - Get event by ID');
-    console.log('3. GET /api/events/type/:type - Get events by type');
-    console.log('4. GET /api/services - Get all services');
-    console.log('5. GET /api/services/:category - Get services by category');
-    console.log('6. GET /api/search?query=text - Search events');
-    console.log('\n============================\n');
 }); 
