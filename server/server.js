@@ -1,15 +1,37 @@
 // Import required modules
 const express = require('express');
 const cors = require('cors');
+const mongoose = require('mongoose');
+require('dotenv').config();
+
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
+
+// CORS configuration
+app.use(cors({
+    origin: ['http://localhost:5173', 'http://localhost:5174'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
+}));
+
 app.use(express.json());
-app.use(cors());
 
-const connectDB = require('./config/db');
-connectDB();
+// Connect to MongoDB
+mongoose.connect(process.env.MONGODB_URI)
+.then(() => console.log('MongoDB connected'))
+.catch(err => console.error('MongoDB connection error:', err));
 
-// Sample data for events
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({
+        status: "error",
+        message: "Something went wrong!"
+    });
+});
+
+// Sample data for events (temporary until MongoDB is fully set up)
 const events = [
     {
         id: 1,
@@ -100,9 +122,25 @@ const services = {
 
 // GET Endpoints
 
+//A  API works like asking for information—sending a request to a server,
+//  and the server gives back the data you need. 
+// It doesn't change anything on the server, just retrieves the requested details.
+
 // 1. Get all events
 app.get('/api/events', (req, res) => {
-    res.json({ status: "success", data: events });
+    try {
+        console.log('Fetching events...');
+        res.json({
+            status: "success",
+            data: events
+        });
+    } catch (error) {
+        console.error('Error in /api/events:', error);
+        res.status(500).json({
+            status: "error",
+            message: "Error fetching events"
+        });
+    }
 });
 
 // 2. Get event by ID
@@ -229,7 +267,23 @@ app.get('/api/events/stats', (req, res) => {
     res.json({ status: "success", data: stats });
 });
 
-
+// GET booked dates
+app.get('/api/events/dates', (req, res) => {
+    try {
+        console.log('Fetching dates...');
+        const dates = events.map(event => event.date);
+        res.json({
+            status: "success",
+            data: dates
+        });
+    } catch (error) {
+        console.error('Error in /api/events/dates:', error);
+        res.status(500).json({
+            status: "error",
+            message: "Error fetching dates"
+        });
+    }
+});
 
 // POST Endpoints
 
@@ -314,6 +368,28 @@ app.post('/api/services/:category', (req, res) => {
         message: "Service created successfully",
         data: service
     });
+});
+
+// 3. AI Image Generation Endpoint
+app.post('/api/events/generate-image', (req, res) => {
+    try {
+        console.log('Generating image...');
+        const { eventTitle, eventDescription, eventType } = req.body;
+        
+        // For now, using Unsplash as a placeholder
+        const imageUrl = `https://source.unsplash.com/800x600/?${eventType},${eventTitle.split(' ').join(',')}`;
+        
+        res.json({
+            status: "success",
+            imageUrl: imageUrl
+        });
+    } catch (error) {
+        console.error('Error in /api/events/generate-image:', error);
+        res.status(500).json({
+            status: "error",
+            message: "Error generating image"
+        });
+    }
 });
 
 // PUT Endpoints
@@ -416,6 +492,7 @@ app.put('/api/services/:category/:id', (req, res) => {
 // Start the server
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
+    console.log(`API available at http://localhost:${PORT}/api/events`);
 });                    
 
 // 10. Get event by date
