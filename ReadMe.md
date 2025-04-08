@@ -26,3 +26,13 @@
 18. **Day 18:** Optimize the platform for performance and fix any bugs identified during testing.
 19. **Day 19:** Add final touches to the UI/UX design to make it visually appealing.
 20. **Day 20:** Deploy the website on a hosting platform and prepare for the final demo.
+
+
+
+
+
+
+
+ 
+
+ #### **Render Link** ==  https://s72-mallikarjun-capstone-event-hub-2.onrender.com 
