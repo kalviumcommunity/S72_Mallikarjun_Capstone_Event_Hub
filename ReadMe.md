@@ -35,6 +35,6 @@
 
  
 
-
+### **Netlify Link** == https://event-hub-capstone.netlify.app/
 
  #### **Render Link** ==  https://s72-mallikarjun-capstone-event-hub-2.onrender.com 
